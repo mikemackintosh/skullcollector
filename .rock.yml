@@ -1,0 +1,3 @@
+runtime: ruby21
+build: exec ./build
+run: exec ./start
