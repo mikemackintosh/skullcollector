@@ -14,6 +14,9 @@ RUN     apt-get -y install python-django-tagging python-simplejson python-memcac
 RUN     pip install Twisted==11.1.0
 RUN     pip install Django==1.5
 
+# Install JVM
+#RUN     cd ~ && add-apt-repository -y ppa:webupd8team/java
+#RUN     cd ~ && apt-get update && apt-get -y --force-yes install oracle-java8-installer
 
 # Install Elasticsearch
 RUN     cd ~ && wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb
@@ -51,11 +54,9 @@ RUN     wget http://grafanarel.s3.amazonaws.com/grafana-1.9.1.tar.gz -O /src/gra
 
 
 # Install Logstash
-RUN     mkdir /src/logstash
-RUN     wget https://download.elasticsearch.org/logstash/logstash/logstash-1.4.2.tar.gz -O /src/logstash.tar.gz  &&\
-        tar -xzf /src/logstash.tar.gz -C /src/logstash --strip-components=1 &&\
-        rm /src/logstash.tar.gz
-
+RUN     cd ~ && echo 'deb http://packages.elasticsearch.org/logstash/1.5/debian stable main' |\
+        tee /etc/apt/sources.list.d/logstash.list
+RUN     cd ~ && apt-get update && apt-get -y --force-yes install logstash
 
 # ----------------- #
 #   Configuration   #
@@ -83,13 +84,25 @@ RUN     chmod 0664 /opt/graphite/storage/graphite.db
 RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
 # Configure Whisper, Carbon and Graphite-Web
-ADD     ./logstash/config.js /opt/logstash/config.js
-RUN     mkdir -p /opt/graphite/storage/whisper
+ADD     ./logstash/config.js /etc/logstash/conf.d/01-default.js
+RUN     mkdir -p /var/log/logstash/
+RUN     mkdir -p /var/lib/logstash
 RUN     touch /opt/graphite/storage/graphite.db /opt/graphite/storage/index
 RUN     chown -R www-data /opt/graphite/storage
 RUN     chmod 0775 /opt/graphite/storage /opt/graphite/storage/whisper
 RUN     chmod 0664 /opt/graphite/storage/graphite.db
 RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
+
+LS_USER=logstash
+LS_GROUP=logstash
+LS_HOME=/var/lib/logstash
+LS_HEAP_SIZE="500m"
+LS_JAVA_OPTS="-Djava.io.tmpdir=/var/lib/logstash"
+LS_LOG_FILE=""
+LS_CONF_DIR=/etc/logstash/conf.d
+LS_OPEN_FILES=16384
+LS_NICE=19
+LS_OPTS=""
 
 # Configure Grafana
 ADD     ./grafana/config.js /src/grafana/config.js
@@ -109,6 +122,7 @@ ADD     ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Grafana
 EXPOSE  80
+EXPOSE  443
 
 # StatsD UDP port
 EXPOSE  8125/udp
@@ -118,6 +132,9 @@ EXPOSE  8126
 
 # Logstash/Elasticsearch
 EXPOSE  9200
+
+# Syslog
+EXPOSE  514/udp
 
 # -------- #
 #   Run!   #
