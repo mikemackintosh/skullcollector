@@ -41,22 +41,30 @@ RUN     git clone https://github.com/graphite-project/graphite-web.git /src/grap
         python setup.py install
 
 # Install StatsD
-RUN     git clone https://github.com/etsy/statsd.git /src/statsd                                             &&\
-        cd /src/statsd                                                                                       &&\
+RUN     git clone https://github.com/etsy/statsd.git /src/statsd                                    &&\
+        cd /src/statsd                                                                              &&\
         git checkout v0.7.2
 
 
 # Install Grafana
 RUN     mkdir /src/grafana
-RUN     wget http://grafanarel.s3.amazonaws.com/grafana-1.9.1.tar.gz -O /src/grafana.tar.gz                  &&\
+RUN     wget http://grafanarel.s3.amazonaws.com/grafana-1.9.1.tar.gz -O /src/grafana.tar.gz         &&\
         tar -xzf /src/grafana.tar.gz -C /src/grafana --strip-components=1 &&\
         rm /src/grafana.tar.gz
 
 
 # Install Logstash
-RUN     cd ~ && echo 'deb http://packages.elasticsearch.org/logstash/1.5/debian stable main' |\
-        tee /etc/apt/sources.list.d/logstash.list
-RUN     cd ~ && apt-get update && apt-get -y --force-yes install logstash
+RUN     cd ~ && echo 'deb http://packages.elasticsearch.org/logstash/1.5/debian stable main'        |\
+        tee /etc/apt/sources.list.d/logstash.list                                                   &&\
+        apt-get update                                                                              &&\
+        apt-get -y --force-yes install logstash
+
+
+# Install Kibana
+RUN     mkdir -p /opt/kibana                                                                          &&\
+        cd ~ && wget https://download.elasticsearch.org/kibana/kibana/kibana-4.0.1-linux-x64.tar.gz   &&\
+        tar xvf kibana-*.tar.gz -C /opt/kibana --strip-components=1
+
 
 # ----------------- #
 #   Configuration   #
@@ -83,11 +91,14 @@ RUN     chmod 0775 /opt/graphite/storage /opt/graphite/storage/whisper
 RUN     chmod 0664 /opt/graphite/storage/graphite.db
 RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
-# Configure Whisper, Carbon and Graphite-Web
-ADD     ./logstash/config.js /etc/logstash/conf.d/01-default.js
+# Configure Logstash
+ADD     ./logstash/* /etc/logstash/conf.d/
 RUN     mkdir -p /var/log/logstash
 RUN     mkdir -p /var/lib/logstash
 RUN     chown -R logstash /var/lib/logstash
+
+# Configure Logstash
+ADD     ./kibana/kibana.yml /opt/kibana/config/kibana.yml
 
 # Configure Grafana
 ADD     ./grafana/config.js /src/grafana/config.js

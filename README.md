@@ -1,4 +1,4 @@
-StatsD + Graphite + Grafana + Kamon Dashboard
+StatsD + Graphite + Grafana + + Kibana + Logstash Dashboard
 ---------------------------------------------
 
 This image contains a sensible default configuration of StatsD, Graphite and Grafana, and comes bundled with a example
@@ -12,8 +12,11 @@ This image is published under [Kamon's repository on the Docker Index](https://i
 need as a prerequisite is having Docker installed on your machine. The container exposes the following ports:
 
 - `80`: the Grafana web interface.
+- `443`: the Grafana secure-web interface.
+- `514`: syslog.
 - `8125`: the StatsD port.
 - `8126`: the StatsD administrative port.
+- `9200`: the ElasticSearch administrative interface.
 
 To start a container with this image you just need to run the following command:
 

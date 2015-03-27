@@ -1,4 +1,7 @@
 runtime: ruby21
 build: exec ./build
 run: exec ./start
-ssh: exec docker exec -i -t ${CONTAINER} bash
+kill: exec docker kill skullcollector
+restart: exec docker restart skullcollector
+status: exec docker ps -l
+shell: exec docker exec -i -t skullcollector bash
