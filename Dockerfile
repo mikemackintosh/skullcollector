@@ -85,24 +85,9 @@ RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
 # Configure Whisper, Carbon and Graphite-Web
 ADD     ./logstash/config.js /etc/logstash/conf.d/01-default.js
-RUN     mkdir -p /var/log/logstash/
+RUN     mkdir -p /var/log/logstash
 RUN     mkdir -p /var/lib/logstash
-RUN     touch /opt/graphite/storage/graphite.db /opt/graphite/storage/index
-RUN     chown -R www-data /opt/graphite/storage
-RUN     chmod 0775 /opt/graphite/storage /opt/graphite/storage/whisper
-RUN     chmod 0664 /opt/graphite/storage/graphite.db
-RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
-
-LS_USER=logstash
-LS_GROUP=logstash
-LS_HOME=/var/lib/logstash
-LS_HEAP_SIZE="500m"
-LS_JAVA_OPTS="-Djava.io.tmpdir=/var/lib/logstash"
-LS_LOG_FILE=""
-LS_CONF_DIR=/etc/logstash/conf.d
-LS_OPEN_FILES=16384
-LS_NICE=19
-LS_OPTS=""
+RUN     chown -R logstash /var/lib/logstash
 
 # Configure Grafana
 ADD     ./grafana/config.js /src/grafana/config.js
