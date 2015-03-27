@@ -19,8 +19,8 @@ RUN     pip install Django==1.5
 #RUN     cd ~ && apt-get update && apt-get -y --force-yes install oracle-java8-installer
 
 # Install Elasticsearch
-RUN     cd ~ && wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.2.deb
-RUN     cd ~ && dpkg -i elasticsearch-1.3.2.deb && rm elasticsearch-1.3.2.deb
+RUN     cd ~ && wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.deb
+RUN     cd ~ && dpkg -i elasticsearch-1.4.4.deb && rm elasticsearch-1.4.4.deb
 
 # Checkout the stable branches of Graphite, Carbon and Whisper and install from there
 RUN     mkdir /src
@@ -97,8 +97,9 @@ RUN     mkdir -p /var/log/logstash
 RUN     mkdir -p /var/lib/logstash
 RUN     chown -R logstash /var/lib/logstash
 
-# Configure Logstash
+# Configure Kibana
 ADD     ./kibana/kibana.yml /opt/kibana/config/kibana.yml
+RUN     chown -R www-data /opt/kibana
 
 # Configure Grafana
 ADD     ./grafana/config.js /src/grafana/config.js
@@ -128,6 +129,7 @@ EXPOSE  8126
 
 # Logstash/Elasticsearch
 EXPOSE  9200
+EXPOSE  5601
 
 # Syslog
 EXPOSE  514/udp
