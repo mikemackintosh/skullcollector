@@ -1,3 +1,4 @@
 runtime: ruby21
 build: exec ./build
 run: exec ./start
+ssh: exec docker exec -i -t ${CONTAINER} bash
