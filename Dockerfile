@@ -128,10 +128,11 @@ EXPOSE  8125/udp
 EXPOSE  8126
 
 # Logstash/Elasticsearch
-EXPOSE  9200
-EXPOSE  5601
+# BAD IDEA TO EXPOSE
+# EXPOSE  9200
 
 # Syslog
+EXPOSE  514
 EXPOSE  514/udp
 
 # -------- #
