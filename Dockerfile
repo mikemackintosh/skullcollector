@@ -54,9 +54,10 @@ RUN     git clone https://github.com/etsy/statsd.git /src/statsd                
 
 
 # Install Grafana
-RUN     mkdir /src/grafana
-RUN     wget http://grafanarel.s3.amazonaws.com/grafana-1.9.1.tar.gz -O /src/grafana.tar.gz         &&\
-        tar -xzf /src/grafana.tar.gz -C /src/grafana --strip-components=1 &&\
+RUN     mkdir /src/grafana                                                                                    &&\
+        mkdir /opt/grafana                                                                                    &&\
+        wget https://grafanarel.s3.amazonaws.com/builds/grafana-2.1.3.linux-x64.tar.gz -O /src/grafana.tar.gz &&\
+        tar -xzf /src/grafana.tar.gz -C /opt/grafana --strip-components=1                                     &&\
         rm /src/grafana.tar.gz
 
 
@@ -109,11 +110,13 @@ ADD     ./kibana/kibana.yml /opt/kibana/config/kibana.yml
 RUN     chown -R www-data /opt/kibana
 
 # Configure Grafana
-ADD     ./grafana/config.js /src/grafana/config.js
+ADD     ./grafana/custom.ini /opt/grafana/conf/custom.ini
 
 # Add the default dashboards
 RUN     mkdir /src/dashboards
 ADD     ./grafana/dashboards/* /src/dashboards/
+RUN     mkdir /src/dashboard-loader
+ADD     ./grafana/dashboard-loader/dashboard-loader.js /src/dashboard-loader/
 
 # Configure nginx and supervisord
 ADD     ./nginx/nginx.conf /etc/nginx/nginx.conf
