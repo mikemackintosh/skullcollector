@@ -19,7 +19,8 @@ RUN     pip install Django==1.5
 # Install JVM
 #RUN     cd ~ && add-apt-repository -y ppa:webupd8team/java
 #RUN     cd ~ && apt-get update && apt-get -y --force-yes install oracle-java8-installer
-
+RUN setcap 'cap_net_bind_service=+ep' \
+    /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
 
 # Install Elasticsearch
 RUN     cd ~ && wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.deb
@@ -125,6 +126,7 @@ ADD     ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Grafana
 EXPOSE  80
+EXPOSE  81
 EXPOSE  443
 
 # StatsD UDP port

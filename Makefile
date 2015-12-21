@@ -21,3 +21,6 @@ run:
 	    -p 8126:8126/tcp \
 	    -p 9200:9200/tcp \
 	  --name skullcollector mikemackintosh/skullcollector
+
+install:
+	cp upstart.conf /etc/init/skullcollector.conf
