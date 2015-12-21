@@ -11,16 +11,20 @@ RUN     apt-get -y update
 RUN     apt-get -y install python-django-tagging python-simplejson python-memcache python-ldap python-cairo python-pysqlite2 python-support \
                            python-pip gunicorn supervisor nginx-light nodejs git wget curl openjdk-7-jre build-essential python-dev
 
+
 RUN     pip install Twisted==11.1.0
 RUN     pip install Django==1.5
+
 
 # Install JVM
 #RUN     cd ~ && add-apt-repository -y ppa:webupd8team/java
 #RUN     cd ~ && apt-get update && apt-get -y --force-yes install oracle-java8-installer
 
+
 # Install Elasticsearch
 RUN     cd ~ && wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.4.deb
 RUN     cd ~ && dpkg -i elasticsearch-1.4.4.deb && rm elasticsearch-1.4.4.deb
+
 
 # Checkout the stable branches of Graphite, Carbon and Whisper and install from there
 RUN     mkdir /src
@@ -28,6 +32,7 @@ RUN     git clone https://github.com/graphite-project/whisper.git /src/whisper  
         cd /src/whisper                                                                   &&\
         git checkout 0.9.x                                                                &&\
         python setup.py install
+
 
 RUN     git clone https://github.com/graphite-project/carbon.git /src/carbon              &&\
         cd /src/carbon                                                                    &&\
@@ -39,6 +44,7 @@ RUN     git clone https://github.com/graphite-project/graphite-web.git /src/grap
         cd /src/graphite-web                                                              &&\
         git checkout 0.9.x                                                                &&\
         python setup.py install
+
 
 # Install StatsD
 RUN     git clone https://github.com/etsy/statsd.git /src/statsd                                    &&\
@@ -126,6 +132,11 @@ EXPOSE  8125/udp
 
 # StatsD Management port
 EXPOSE  8126
+EXPOSE  8080
+EXPOSE  8000
+
+EXPOSE  3000
+EXPOSE  3001
 
 # Logstash/Elasticsearch
 # BAD IDEA TO EXPOSE
