@@ -1,7 +1,5 @@
 #! /bin/bash
 
-docker kill skullcollector
-docker rm skullcollector
 truncate ./logs/* --size 0 2>/dev/null
 
 docker run -d -v $(pwd)/logs:/var/log/supervisor \
