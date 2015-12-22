@@ -129,6 +129,7 @@ EXPOSE  443
 
 # StatsD UDP port
 EXPOSE  8125/udp
+EXPOSE  8125/tcp
 
 # StatsD Management port
 EXPOSE  8126
