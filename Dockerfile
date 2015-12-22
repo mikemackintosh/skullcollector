@@ -14,7 +14,7 @@ RUN     apt-get -y install python-django-tagging python-simplejson python-memcac
 
 RUN     pip install Twisted==11.1.0
 RUN     pip install Django==1.5
-
+RUN     pip install pytz
 
 # Install JVM
 #RUN     cd ~ && add-apt-repository -y ppa:webupd8team/java
