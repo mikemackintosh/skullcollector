@@ -92,12 +92,6 @@ ADD     ./graphite/local_settings.py /opt/graphite/webapp/graphite/local_setting
 ADD     ./graphite/carbon.conf /opt/graphite/conf/carbon.conf
 ADD     ./graphite/storage-schemas.conf /opt/graphite/conf/storage-schemas.conf
 ADD     ./graphite/storage-aggregation.conf /opt/graphite/conf/storage-aggregation.conf
-RUN     mkdir -p /opt/graphite/storage/whisper
-RUN     touch /opt/graphite/storage/graphite.db /opt/graphite/storage/index
-RUN     chown -R www-data /opt/graphite/storage
-RUN     chmod 0775 /opt/graphite/storage /opt/graphite/storage/whisper
-RUN     chmod 0664 /opt/graphite/storage/graphite.db
-RUN     cd /opt/graphite/webapp/graphite && python manage.py syncdb --noinput
 
 # Configure Logstash
 ADD     ./logstash/* /etc/logstash/conf.d/
@@ -154,5 +148,7 @@ EXPOSE  514/udp
 # -------- #
 #   Run!   #
 # -------- #
+ADD ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD     ["/usr/bin/supervisord"]
+CMD     ["/entrypoint.sh"]
