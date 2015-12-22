@@ -59,7 +59,7 @@ RUN     mkdir /src/grafana                                                      
         wget https://grafanarel.s3.amazonaws.com/builds/grafana-2.1.3.linux-x64.tar.gz -O /src/grafana.tar.gz &&\
         tar -xzf /src/grafana.tar.gz -C /opt/grafana --strip-components=1                                     &&\
         rm /src/grafana.tar.gz &&\
-        cd /opt/grafana && npm install
+        cd /opt/grafana && npm install ini
 
 
 # Install Logstash
